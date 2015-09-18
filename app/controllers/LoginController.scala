@@ -29,7 +29,6 @@ class LoginController @Inject() (repo: UserRepository, val messagesApi: Messages
       },
       user => {
         println("login!!!.")
-        Future.successful(Ok(views.html.board("Login complete!")))
         if (repo.find(user.email, user.password)) {
           Future.successful(Ok(views.html.board("Login complete!")))
         } else {
