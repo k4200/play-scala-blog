@@ -15,9 +15,7 @@ class LoginController @Inject() (repo: UserRepository, val messagesApi: Messages
     mapping(
       "email" -> nonEmptyText,
       "password" -> nonEmptyText
-    )(LoginUserForm.apply)(LoginUserForm.unapply) verifying("Invalid User!", user =>
-      repo.find(user.email, user.password)
-    )
+    )(LoginUserForm.apply)(LoginUserForm.unapply)
   }
 
   def index = Action {
@@ -32,6 +30,13 @@ class LoginController @Inject() (repo: UserRepository, val messagesApi: Messages
       user => {
         println("login!!!.")
         Future.successful(Ok(views.html.board("Login complete!")))
+        if (repo.find(user.email, user.password)) {
+          Future.successful(Ok(views.html.board("Login complete!")))
+        } else {
+          val errorMessage = "email or password is invalid."
+          val formWithErrors = loginUser.withError("email", errorMessage).withError("password", errorMessage)
+          Future.successful(Ok(views.html.index(formWithErrors)))
+        }
       }
     )
   }
